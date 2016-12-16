@@ -12,12 +12,12 @@ class gates {
         PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("gates.out")));       
         int N = Integer.parseInt(f.readLine());
         String st = f.readLine();
-        boolean[][] graph = new boolean[2*N][2*N];
+        boolean[][] graph = new boolean[2*N][2*N]; //We let each direction count as two units in our boolean array. Furthermore, a true means it has been visited and a false means it hasn't been visited yet. In other words, a true means there is a fence there
         int xpos = N;
         int ypos = N;
         int numDistinctRegion = 0;
-        graph[xpos][ypos] = true;
-        for(int i = 0; i < N; i++){
+        graph[xpos][ypos] = true; //We initialize our starting position as visited
+        for(int i = 0; i < N; i++){ //Easy way to fill out the boolean array.
             char dir = st.charAt(i);
             if(dir == 'N'){
                 ypos--;
@@ -45,11 +45,11 @@ class gates {
             }
         }
         
-        for(int i = 0; i < 2*N; i++){
+        for(int i = 0; i < 2*N; i++){ //We look through our boolean array for any empty spots, or "false" spots
             for(int j = 0; j < 2*N; j++){
-                if(!graph[i][j]) {
-                    fill(j, i, graph);
-                    if(!ifNotBordered)
+                if(!graph[i][j]) { //Great! We found an empty spot!
+                    fill(j, i, graph); //We run our recursive flood-fill, which will fill the entire region
+                    if(!ifNotBordered) //Once again, a way to detect distinct region
                         numDistinctRegion++;
                     else
                         ifNotBordered = false;
@@ -63,18 +63,18 @@ class gates {
         out.close();                                  // close the output file
     }
     public static void fill(int x, int y, boolean[][] graph){
-        if(!checkInBound(x, y, graph.length)) {
-            ifNotBordered = true;
+        if(!checkInBound(x, y, graph.length)) { //There is a chance our x and y coordinates will be out of the graph boundaries. If this is true, then we do NOT use continue as we will get an array out of bounds error
+            ifNotBordered = true; //Just some way to detect if it is an actual box by detecting if it is on the outer layer that we fill
             return;
         }
-        if(graph[y][x]) return; //If true which means the graph has been visited, return true
+        if(graph[y][x]) return; //If true which means the graph has been visited, return true and we do NOT bother with this spot. We only care about the empty spots, or the "False" spots
         graph[y][x] = true;
         int[][] d = {{-1, 1, 0, 0}, {0, 0, -1, 1}}; //d[0] = [-1, 1, 0, 0] => d[1] = [0, 0, -1, 1]
-        for(int i = 0; i < 4; i++)
+        for(int i = 0; i < 4; i++) //In simple terms, this loop just means to repeat the fill method (recursion) by going in all 4 directions
             fill(x + d[0][i], y + d[1][i], graph); //Flood-Fill in respectively East, West, North, South. I'm not too sure 
         return;
     }
-    public static boolean checkInBound(int x, int y, int N){
+    public static boolean checkInBound(int x, int y, int N){ 
         if((x >= 0 && y >= 0) && (x < N && y < N)) return true;
         else return false;
     }
